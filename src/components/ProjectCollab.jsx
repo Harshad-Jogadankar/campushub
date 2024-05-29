@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 import {
@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { Navigate } from "react-router-dom";
+import Modal from "./Modal"; // Adjust the path as necessary
 
 const ProjectCollab = (props) => {
   const [showProjectForm, setShowProjectForm] = useState(false);
@@ -47,6 +48,9 @@ const ProjectCollab = (props) => {
 
   const handleProjectSubmit = () => {
     const projectData = {
+      userName: props.user.displayName,
+      profilePic: props.user.photoURL,
+      email: props.user.email,
       name: projectName,
       description: projectDescription,
       roles: projectRoles,
@@ -103,7 +107,7 @@ const ProjectCollab = (props) => {
         <button onClick={toggleProjectForm}>
           {isEditing ? "Edit Project" : "Start a Project"}
         </button>
-        {showProjectForm && (
+        <Modal show={showProjectForm} onClose={resetForm}>
           <ProjectForm>
             <input
               type="text"
@@ -141,7 +145,7 @@ const ProjectCollab = (props) => {
             <button onClick={handleProjectSubmit}>Submit</button>
             <button onClick={resetForm}>Cancel</button>
           </ProjectForm>
-        )}
+        </Modal>
       </ProjectBox>
       {props.projects.length === 0 ? (
         <p>There are no projects</p>
@@ -152,6 +156,11 @@ const ProjectCollab = (props) => {
             .map((project, key) => (
               <Project key={key}>
                 <ProjectDetails>
+                  <span onClick={() => handleUserClick(project.email)}>
+                    <p>{project.userName}</p>
+                    <img src={project.profilePic} />
+                  </span>
+
                   <h3>{project.name}</h3>
                   <p>{project.description}</p>
                   <p>{formatDistanceToNow(new Date(project.timestamp))} ago</p>

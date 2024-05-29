@@ -33,7 +33,7 @@ function App() {
           />
 
           <Route
-            path="/projectcollab"
+            path="/procollab"
             element={
               <>
                 <Header />
