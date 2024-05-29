@@ -31,6 +31,7 @@ function App() {
               </>
             }
           />
+
           <Route
             path="/projectcollab"
             element={
@@ -40,6 +41,7 @@ function App() {
               </>
             }
           />
+
           <Route
             path="/user/:email"
             element={

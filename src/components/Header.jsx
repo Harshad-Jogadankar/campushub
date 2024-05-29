@@ -15,8 +15,7 @@ const Header = (props) => {
   const handleCampuHubClick = () => {
     navigate("/home");
   };
-
-  const handleCollabClick = () => {
+  const handleProjectCollabClick = () => {
     navigate("/projectcollab");
   };
   return (
@@ -51,7 +50,11 @@ const Header = (props) => {
               </a>
             </NavList>
 
-            <NavList onClick={handleCollabClick}>
+            <NavList
+              onClick={handleProjectCollabClick}
+              className="projectcollab"
+              alt=""
+            >
               <a>
                 <img
                   src="/images/nav-project-colab.svg"
@@ -276,9 +279,8 @@ const NavList = styled.li`
 
 const SignOut = styled.div`
   position: absolute;
-  top: 85px;
+  top: 86px;
   background-color: white;
-
   width: 100px;
   height: 40px;
   font-size: 16px;
@@ -291,13 +293,13 @@ const Profile = styled.div`
   position: absolute;
   top: 45px; /* Adjusted to be above SignOut */
   background-color: white;
-  border-top: 4px black;
   width: 100px;
   height: 40px;
   font-size: 16px;
   transition-duration: 167ms;
   text-align: center;
   display: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
 `;
 
 const User = styled(NavList)`

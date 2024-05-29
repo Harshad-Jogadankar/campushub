@@ -36,11 +36,7 @@ const Profile = (props) => {
             <h3>{props.userDetails.semester}</h3>
             {props.userDetails.links && (
               <h3>
-                <a
-                  href={props.userDetails.links}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href={props.userDetails.links} target="_blank" rel="noopener noreferrer">
                   {props.userDetails.links}
                 </a>
               </h3>

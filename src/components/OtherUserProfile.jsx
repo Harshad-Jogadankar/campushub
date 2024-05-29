@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { fetchUserDetailsByEmail } from "../actions"; // Assuming you have an action to fetch user details by email
 import { connect } from "react-redux";
+import { getArticlesAPI } from "../actions";
+
 
 const OtherUserProfile = (props) => {
   const { email } = useParams();
@@ -14,6 +16,8 @@ const OtherUserProfile = (props) => {
     }
   }, [email]);
 
+  
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -22,24 +26,20 @@ const OtherUserProfile = (props) => {
     <Container>
       <ProfileCard>
         <div>
-          {props.userDetails && props.userDetails.image ? (
-            <img src={props.userDetails.image} alt="User" />
+          {props.userDetails && props.userDetails.profilePicture ? (
+            <img src={props.userDetails.profilePicture} alt="User" />
           ) : (
             <img src="/images/user.svg" alt=" " />
           )}
           <UserInfo>
-            <h2>{props.userDetails.username}</h2>
-            <p>{email}</p>
-            <h3>{props.userDetails.headline}</h3>
-            <h3>{props.userDetails.branch}</h3>
-            <h3>{props.userDetails.semester}</h3>
+            <h2>{ props.userDetails.username}</h2>
+            <p>{ email }</p>
+            <h3>About : {props.userDetails.headline}</h3>
+            <h3>Branch : {props.userDetails.branch}</h3>
+            <h3>Semester : {props.userDetails.semester}</h3>
             {props.userDetails.links && (
-              <h3>
-                <a
-                  href={props.userDetails.links}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+              <h3>Resume/ Coding Links : 
+                <a href={props.userDetails.links} target="_blank" rel="noopener noreferrer">
                   {props.userDetails.links}
                 </a>
               </h3>
