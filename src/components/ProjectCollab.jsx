@@ -60,12 +60,7 @@ const ProjectCollab = (props) => {
       props.addProject(projectData);
     }
 
-    setProjectName("");
-    setProjectDescription("");
-    setProjectRoles([{ name: "", role: "" }]);
-    setShowProjectForm(false);
-    setIsEditing(false);
-    setEditingProjectId(null);
+    resetForm();
   };
 
   const handleEditProject = (project) => {
@@ -79,6 +74,15 @@ const ProjectCollab = (props) => {
 
   const handleDeleteProject = (projectId) => {
     props.deleteProject(projectId);
+  };
+
+  const resetForm = () => {
+    setProjectName("");
+    setProjectDescription("");
+    setProjectRoles([{ name: "", role: "" }]);
+    setShowProjectForm(false);
+    setIsEditing(false);
+    setEditingProjectId(null);
   };
 
   if (!props.user) {
@@ -127,6 +131,7 @@ const ProjectCollab = (props) => {
             ))}
             <button onClick={handleAddRole}>Add Role</button>
             <button onClick={handleProjectSubmit}>Submit</button>
+            <button onClick={resetForm}>Cancel</button>
           </ProjectForm>
         )}
       </ProjectBox>
