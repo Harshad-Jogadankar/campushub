@@ -85,6 +85,14 @@ const ProjectCollab = (props) => {
     setEditingProjectId(null);
   };
 
+  const toggleProjectForm = () => {
+    if (showProjectForm) {
+      resetForm();
+    } else {
+      setShowProjectForm(true);
+    }
+  };
+
   if (!props.user) {
     return <Navigate to="/" />;
   }
@@ -92,7 +100,7 @@ const ProjectCollab = (props) => {
   return (
     <Container>
       <ProjectBox>
-        <button onClick={() => setShowProjectForm(!showProjectForm)}>
+        <button onClick={toggleProjectForm}>
           {isEditing ? "Edit Project" : "Start a Project"}
         </button>
         {showProjectForm && (
