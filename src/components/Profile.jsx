@@ -72,11 +72,11 @@ const Profile = (props) => {
             <img className="profileImg" src="/images/user.svg" alt=" " />
           )}
           <UserInfo>
-            <h2>{props.user ? props.user.displayName : "User Name"}</h2>
-            <p>{props.user ? props.user.email : "user@example.com"}</p>
-            <h3>{props.userDetails.headline}</h3>
-            <h3>{props.userDetails.branch}</h3>
-            <h3>{props.userDetails.semester}</h3>
+            <h2> {props.user ? props.user.displayName : "User Name"}</h2>
+            <p> {props.user ? props.user.email : "user@example.com"}</p>
+            <h3>About: {props.userDetails.headline}</h3>
+            <h3>Branch: {props.userDetails.branch}</h3>
+            <h3>Semester: {props.userDetails.semester}</h3>
             {props.userDetails.links && (
               <h3>
                 <a
@@ -84,7 +84,7 @@ const Profile = (props) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {props.userDetails.links}
+                  Coding Link: {props.userDetails.links}
                 </a>
               </h3>
             )}

@@ -27,6 +27,10 @@ const EventCollab = (props) => {
     }
   }, [props.user]);
 
+  const handleUserClick = (email) => {
+    navigate(`/user/${email}`);
+  };
+
   const checkAuthorization = async () => {
     if (props.user) {
       const doc = await db.collection("settings").doc("authorizedUsers").get();
@@ -37,10 +41,6 @@ const EventCollab = (props) => {
         }
       }
     }
-  };
-
-  const handleUserClick = (email) => {
-    navigate(`/user/${email}`);
   };
 
   const handleEventSubmit = (eventData) => {
@@ -83,6 +83,10 @@ const EventCollab = (props) => {
     }
   };
 
+  const filteredEvents = props.events.filter((event) =>
+    event.name.toLowerCase().includes(props.searchQuery.toLowerCase())
+  );
+
   if (!props.user) {
     return <Navigate to="/" />;
   }
@@ -102,11 +106,14 @@ const EventCollab = (props) => {
           existingEvent={editingEvent}
         />
       </EventBox>
-      {props.events.length === 0 ? (
+      {filteredEvents.length === 0 ? (
         <NoEventsMessage>There are no events</NoEventsMessage>
       ) : (
         <Content>
-          {props.events
+          {props.loading && (
+            <img src="/images/spin-loader.svg" className="loading" />
+          )}
+          {filteredEvents
             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
             .map((event, key) => (
               <Event key={event.id}>
@@ -190,6 +197,10 @@ const NoEventsMessage = styled.p`
 
 const Content = styled.div`
   text-align: center;
+  .loading {
+    height: 30px;
+    width: 30px;
+  }
 `;
 
 const Event = styled.div`
@@ -292,7 +303,6 @@ const DeleteButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
 `;
-
 const EventClub = styled.p`
   margin: 5px 0;
   color: #777;
@@ -308,6 +318,7 @@ const mapStateToProps = (state) => {
     loading: state.eventState.loading,
     user: state.userState.user,
     events: state.eventState.events,
+    searchQuery: state.searchState.searchQuery,
   };
 };
 
