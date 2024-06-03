@@ -81,13 +81,6 @@ const Header = (props) => {
 
             <NavList>
               <a>
-                <img src="/images/nav-messaging.svg" class="messaging" alt="" />
-                <span>Messaging</span>
-              </a>
-            </NavList>
-
-            <NavList>
-              <a>
                 <img
                   src="/images/nav-notifications.svg"
                   className="notifications"
@@ -97,33 +90,24 @@ const Header = (props) => {
               </a>
             </NavList>
 
-            <User>
+            <NavList onClick={handleProfileClick}>
               <a>
                 {props.user && props.user.photoURL ? (
                   <img src={props.user.photoURL} alt="" />
                 ) : (
                   <img src="/images/user.svg" alt="" />
                 )}
-                <span>Me</span>
-                <img src="/images/nav-dropdown.svg" alt="" />
+                View Profile
               </a>
-              <Profile onClick={handleProfileClick}>
-                <a>View Profile</a>
-              </Profile>
-              <SignOut onClick={() => props.SignOut()}>
-                <a>Sign Out</a>
-              </SignOut>
-            </User>
+              <a></a>
+            </NavList>
 
-            <Work>
+            <NavList onClick={() => props.SignOut()}>
               <a>
-                <img src="/images/nav-menu.svg" alt="" />
-                <span>
-                  More
-                  <img src="/images/nav-dropdown.svg" alt="" />
-                </span>
+                <img src="/images/sign-out.svg" alt="" />
+                Sign Out
               </a>
-            </Work>
+            </NavList>
           </NavListWrap>
         </Nav>
       </Content>
