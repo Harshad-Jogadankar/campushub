@@ -1,24 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
   const [eventName, setEventName] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const [eventDate, setEventDate] = useState("");
+  const [eventTime, setEventTime] = useState("");
   const [eventLocation, setEventLocation] = useState("");
   const [eventPoster, setEventPoster] = useState(null);
   const [eventBrochure, setEventBrochure] = useState(null);
   const [registrationLink, setRegistrationLink] = useState("");
+  const [clubName, setClubName] = useState("");
+  const [duration, setDuration] = useState("");
 
   useEffect(() => {
     if (existingEvent) {
       setEventName(existingEvent.name);
       setEventDescription(existingEvent.description);
       setEventDate(existingEvent.date);
+      setEventTime(existingEvent.time);
       setEventLocation(existingEvent.location);
       setEventPoster(existingEvent.poster);
       setEventBrochure(existingEvent.brochure);
       setRegistrationLink(existingEvent.registrationLink);
+      setClubName(existingEvent.clubName);
+      setDuration(existingEvent.duration);
     } else {
       resetForm();
     }
@@ -28,25 +34,32 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
     setEventName("");
     setEventDescription("");
     setEventDate("");
+    setEventTime("");
     setEventLocation("");
     setEventPoster(null);
     setEventBrochure(null);
     setRegistrationLink("");
+    setClubName("");
+    setDuration("");
   };
 
   const handleFileChange = (e, setFile) => {
     setFile(e.target.files[0]);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent form submission if validation fails
     const eventData = {
       name: eventName,
       description: eventDescription,
       date: eventDate,
+      time: eventTime,
       location: eventLocation,
       poster: eventPoster,
       brochure: eventBrochure,
       registrationLink: registrationLink,
+      clubName: clubName,
+      duration: duration,
     };
     onSubmit(eventData);
     resetForm();
@@ -61,33 +74,44 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}>&times;</CloseButton>
         <h2>{existingEvent ? "Edit Event" : "Create Event"}</h2>
-        <Form>
+        <Form onSubmit={handleSubmit}>
           <Input
             type="text"
             placeholder="Event Name"
             value={eventName}
             onChange={(e) => setEventName(e.target.value)}
+            required
           />
           <Input
             type="text"
             placeholder="Description"
             value={eventDescription}
             onChange={(e) => setEventDescription(e.target.value)}
+            required
           />
           <Input
             type="date"
             value={eventDate}
             onChange={(e) => setEventDate(e.target.value)}
+            required
+          />
+          <Input
+            type="time"
+            value={eventTime}
+            onChange={(e) => setEventTime(e.target.value)}
+            required
           />
           <Input
             type="text"
             placeholder="Location"
             value={eventLocation}
             onChange={(e) => setEventLocation(e.target.value)}
+            required
           />
           <Input
             type="file"
             onChange={(e) => handleFileChange(e, setEventPoster)}
+            required
           />
           <Input
             type="file"
@@ -99,7 +123,21 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
             value={registrationLink}
             onChange={(e) => setRegistrationLink(e.target.value)}
           />
-          <SubmitButton type="button" onClick={handleSubmit}>
+          <Input
+            type="text"
+            placeholder="Club Name"
+            value={clubName}
+            onChange={(e) => setClubName(e.target.value)}
+            required
+          />
+          <Input
+            type="text"
+            placeholder="Duration"
+            value={duration}
+            required
+            onChange={(e) => setDuration(e.target.value)}
+          />
+          <SubmitButton type="submit">
             {existingEvent ? "Update Event" : "Create Event"}
           </SubmitButton>
         </Form>
@@ -118,6 +156,7 @@ const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 `;
 
 const ModalContent = styled.div`
@@ -146,7 +185,7 @@ const Form = styled.form`
 
 const Input = styled.input`
   display: block;
-  width: 100%;
+  width: 95%;
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ddd;
@@ -160,7 +199,7 @@ const SubmitButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  align-self: flex-end;
+  align-self: center;
 `;
 
 export default EventModal;

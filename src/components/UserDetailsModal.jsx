@@ -11,10 +11,9 @@ const UserDetailsModal = (props) => {
   const [links, setLinks] = useState("");
 
   const handleSubmit = (e) => {
-    
     e.preventDefault();
     const username = props.user.displayName;
-    const userEmail = props.user.email; 
+    const userEmail = props.user.email;
     const userProfileImage = props.user.photoURL;
     const userDetails = { headline, branch, semester, links };
 

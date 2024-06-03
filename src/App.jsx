@@ -38,7 +38,7 @@ function App() {
             element={
               <>
                 <Header />
-                <ProjectCollab />
+                <ProjectCollab/>
               </>
             }
           />
@@ -48,7 +48,7 @@ function App() {
             element={
               <>
                 <Header />
-                <EventCollab />
+                <EventCollab/>
               </>
             }
           />
@@ -58,10 +58,11 @@ function App() {
             element={
               <>
                 <Header />
-                <OtherUserProfile />
+                <OtherUserProfile/>
               </>
             }
           />
+
         </Routes>
       </Router>
     </div>

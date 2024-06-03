@@ -11,18 +11,33 @@ import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { Navigate } from "react-router-dom";
 import EventModal from "./EventModal";
+import db from "../firebase";
 
 const EventCollab = (props) => {
   const [showEventForm, setShowEventForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (props.user) {
       props.getEvents();
+      checkAuthorization();
     }
   }, [props.user]);
+
+  const checkAuthorization = async () => {
+    if (props.user) {
+      const doc = await db.collection("settings").doc("authorizedUsers").get();
+      if (doc.exists) {
+        const authorizedEmails = doc.data().emails;
+        if (authorizedEmails.includes(props.user.email)) {
+          setIsAuthorized(true);
+        }
+      }
+    }
+  };
 
   const handleUserClick = (email) => {
     navigate(`/user/${email}`);
@@ -75,9 +90,11 @@ const EventCollab = (props) => {
   return (
     <Container>
       <EventBox>
-        <CreateEventButton onClick={toggleEventForm}>
-          Create Event
-        </CreateEventButton>
+        {isAuthorized && (
+          <CreateEventButton onClick={toggleEventForm}>
+            Create Event
+          </CreateEventButton>
+        )}
         <EventModal
           show={showEventForm}
           onClose={resetForm}
@@ -92,7 +109,7 @@ const EventCollab = (props) => {
           {props.events
             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
             .map((event, key) => (
-              <Event key={key}>
+              <Event key={event.id}>
                 <EventDetails>
                   <UserInfo onClick={() => handleUserClick(event.email)}>
                     <UserName>{event.userName}</UserName>
@@ -104,7 +121,10 @@ const EventCollab = (props) => {
                     {formatDistanceToNow(new Date(event.timestamp))} ago
                   </EventTime>
                   <EventDate>Date: {event.date}</EventDate>
+                  <EventTime>Time: {event.time}</EventTime>
                   <EventLocation>Location: {event.location}</EventLocation>
+                  <EventClub>Club Name: {event.clubName}</EventClub>
+                  <EventDuration>Duration: {event.duration}</EventDuration>
                   {event.poster && (
                     <EventPoster src={event.poster} alt="Event Poster" />
                   )}
@@ -175,7 +195,7 @@ const Content = styled.div`
 const Event = styled.div`
   margin: 10px 0;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #98c5e9;
   border: 1px solid #ddd;
   border-radius: 8px;
 `;
@@ -271,6 +291,16 @@ const DeleteButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
+`;
+
+const EventClub = styled.p`
+  margin: 5px 0;
+  color: #777;
+`;
+
+const EventDuration = styled.p`
+  margin: 5px 0;
+  color: #777;
 `;
 
 const mapStateToProps = (state) => {

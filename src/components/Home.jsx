@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 const Home = (props) => {
   return (
     <Container>
-      {!props.user && <Navigate to='/'/>}
+      {!props.user && <Navigate to="/" />}
       <Section></Section>
       <Layout>
         <Leftside />
@@ -66,9 +66,9 @@ const Layout = styled.div`
   }
 `;
 
-const mapStateToProps=(state)=>{
-  return{
-    user:state.userState.user,
+const mapStateToProps = (state) => {
+  return {
+    user: state.userState.user,
   };
 };
 

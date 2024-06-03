@@ -4,14 +4,21 @@ import {
   ADD_PROJECT_MEMBER,
   DELETE_PROJECT,
   UPDATE_PROJECT,
+  SET_LOADING_STATUS,
 } from "../actions/actionType";
 
 const initialState = {
   projects: [],
+  searchQuery: "",
 };
 
 const projectReducer = (state = initialState, action) => {
   switch (action.type) {
+    case SET_LOADING_STATUS:
+      return {
+        ...state,
+        loading: action.status,
+      };
     case ADD_PROJECT:
       return {
         ...state,
@@ -54,6 +61,7 @@ const projectReducer = (state = initialState, action) => {
             : project
         ),
       };
+
     default:
       return state;
   }
