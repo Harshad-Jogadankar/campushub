@@ -45,8 +45,8 @@ const Rightside = (props) => {
                 <EventItem>
                   <Avatar />
                   <EventInfo>
-                    <span>{event.name}</span>
-                    <span>{event.time}</span>
+                    <EventName>{event.name}</EventName>
+                    <EventTime>{event.time}</EventTime>
                   </EventInfo>
                 </EventItem>
               </li>
@@ -91,7 +91,7 @@ const Title = styled.div`
   justify-content: space-between;
   font-size: 16px;
   width: 100%;
-  color: rgba(0, 0, 0, 0.6);
+  color: black;
 `;
 
 const FeedList = styled.ul`
@@ -113,8 +113,17 @@ const EventItem = styled.div`
 const EventInfo = styled.div`
   display: flex;
   flex-direction: column;
-  margin-left: 5px;
+  margin-left: 10px; /* Adjusted for proper spacing */
   margin-bottom: 10px;
+  align-items: flex-start; /* Ensure left alignment */
+`;
+
+const EventName = styled.span`
+  font-weight: bold;
+`;
+
+const EventTime = styled.span`
+  color: rgba(0, 0, 0, 0.6);
 `;
 
 const Avatar = styled.div`
@@ -124,7 +133,7 @@ const Avatar = styled.div`
   background-repeat: no-repeat;
   width: 40px;
   height: 40px;
-  margin-right: 8px;
+  margin-right: 10px; /* Adjusted for proper spacing */
 `;
 
 const Recommendation = styled.a`
