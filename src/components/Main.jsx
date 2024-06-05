@@ -15,7 +15,6 @@ const Main = (props) => {
   const [showModal, setShowModal] = useState("close");
   const [commentText, setCommentText] = useState("");
   const [expandedArticleId, setExpandedArticleId] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -100,6 +99,7 @@ const Main = (props) => {
             <button
               onClick={handleClick}
               disabled={props.loading ? true : false}
+              className="clickable"
             >
               Start a post
             </button>
@@ -146,7 +146,7 @@ const Main = (props) => {
                       onClick={() => handleDelete(article.id)}
                       disabled={props.user.email !== article.actor.description}
                     >
-                      <img src="/images/delete.svg" alt="" />
+                      <img src="/images/bin.svg" alt="" />
                     </button>
                   </SharedActor>
                   <Description>{article.description}</Description>
@@ -313,6 +313,10 @@ const Sharebox = styled(CommonCard)`
       }
     }
   }
+
+  .clickable {
+    cursor: pointer;
+  }
 `;
 
 const Article = styled(CommonCard)`
@@ -336,9 +340,9 @@ const SharedActor = styled.div`
     text-decoration: none;
 
     img {
+      cursor: pointer;
       width: 48px;
       height: 48px;
-      cursor: pointer;
     }
     & > div {
       display: flex;
@@ -348,12 +352,12 @@ const SharedActor = styled.div`
       margin-left: 8px;
       overflow: hidden;
       span {
+        cursor: pointer;
         text-align: left;
         &:first-child {
           font-size: 14px;
           font-weight: 700;
           color: black;
-          cursor: pointer;
         }
         &:nth-child(n + 1) {
           font-size: 12px;
@@ -363,45 +367,18 @@ const SharedActor = styled.div`
     }
   }
   button {
-    cursor: pointer;
     position: absolute;
     right: 12px;
     top: 0;
     background: transparent;
     border: none;
     outline: none;
+    cursor: pointer;
     img {
-      padding: 10px;
       width: 20px;
       height: 20px;
+      margin-top: 10px;
     }
-  }
-`;
-
-const DropdownMenu = styled.div`
-  position: absolute;
-  right: 10px;
-  top: 30px;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  z-index: 1;
-`;
-
-const DropdownItem = styled.button`
-  display: block;
-  padding: 10px 20px;
-  background: white;
-  border: 3px solid #001838;
-  text-align: left;
-  width: 100%;
-  &:hover {
-    background: #f5f5f5;
-  }
-  &:disabled {
-    color: #ccc;
-    cursor: not-allowed;
   }
 `;
 

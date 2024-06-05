@@ -37,7 +37,11 @@ const Profile = (props) => {
   const handleCertificateUpload = (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 0) {
-      props.uploadCertificates(props.user.email, files);
+      if (certificates.length + files.length <= 6) {
+        props.uploadCertificates(props.user.email, files);
+      } else {
+        alert("You can only upload up to 6 certificates.");
+      }
     }
   };
 
@@ -52,8 +56,12 @@ const Profile = (props) => {
 
   const handleAddSkill = () => {
     if (skill.trim() !== "") {
-      props.addSkill(props.user.email, skill.trim());
-      setSkill("");
+      if (props.userDetails.skills.length < 7) {
+        props.addSkill(props.user.email, skill.trim());
+        setSkill("");
+      } else {
+        alert("You can only add up to 7 skills.");
+      }
     }
   };
 
@@ -179,6 +187,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   font-family: "Arial", sans-serif;
+  padding-bottom: 100px;
 `;
 
 const ProfileSection = styled.div`
@@ -208,7 +217,11 @@ const CommonCard = styled.div`
 
 const ProfileCard = styled(CommonCard)`
   width: 30%;
-  min-height: 450px;
+  min-height: 475px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
   .profileImg {
     width: 120px;
@@ -216,17 +229,20 @@ const ProfileCard = styled(CommonCard)`
     border-radius: 50%;
     margin-bottom: 20px;
     border: 3px solid #001838;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
   }
 `;
 
 const SkillsCard = styled(CommonCard)`
   width: 30%;
-  min-height: 450px;
+  min-height: 475px;
 `;
 
 const CertificatesCard = styled(CommonCard)`
   width: 30%;
-  min-height: 450px;
+  min-height: 475px;
 
   .certificate {
     height: 100px;
@@ -237,6 +253,23 @@ const CertificatesCard = styled(CommonCard)`
     &:hover {
       transform: scale(1.05);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  button {
+    margin: 12px 10px;
+    padding: 10px 20px;
+    color: #001838;
+    background-color: #fff;
+    border: 2px solid #001838;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.3s;
+
+    &:hover {
+      background-color: #f0f0f0;
+      transform: translateY(-2px);
     }
   }
 `;
@@ -292,51 +325,16 @@ const UserInfo = styled.div`
 
   h3 {
     margin: 10px 0;
-    font-size: 16px;
-    color: rgba(0, 0, 0, 0.9);
-  }
-`;
+    color: #001838;
+    font-size: 18px;
 
-const EnlargedCertificate = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-
-  img {
-    max-width: 90%;
-    max-height: 90%;
-    border: 3px solid #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  div {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-
-    button {
-      padding: 10px 20px;
+    a {
       color: #001838;
-      background-color: #fff;
-      border: 2px solid #001838;
-      border-radius: 20px;
-      cursor: pointer;
+      text-decoration: none;
       font-weight: bold;
-      transition: background-color 0.3s, transform 0.3s;
 
       &:hover {
-        background-color: #f0f0f0;
-        transform: translateY(-2px);
+        text-decoration: underline;
       }
     }
   }
@@ -344,15 +342,20 @@ const EnlargedCertificate = styled.div`
 
 const SkillInput = styled.div`
   display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+  align-items: center;
+  margin-top: 20px;
 
   input {
     padding: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #001838;
     width: 200px;
-    border: 2px solid #001838;
-    border-radius: 20px 0 0 20px;
-    outline: none;
+    transition: box-shadow 0.3s;
+
+    &:focus {
+      box-shadow: 0 0 5px rgba(0, 24, 56, 0.5);
+    }
   }
 
   button {
@@ -360,65 +363,122 @@ const SkillInput = styled.div`
     color: #fff;
     background-color: #001838;
     border: 2px solid #001838;
-    border-radius: 0 20px 20px 0;
+    border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
     transition: background-color 0.3s, transform 0.3s;
 
     &:hover {
-      background-color: #002a6c;
+      background-color: #0056b3;
       transform: translateY(-2px);
     }
   }
 `;
 
-const SkillList = styled.ul`
-  list-style: none;
-  padding: 0;
+const SkillList = styled.div`
   margin-top: 20px;
+  width: 100%;
 `;
 
-const SkillItem = styled.li`
-  margin: 5px 0;
-  padding: 10px 20px;
-  background-color: #f0f0f0;
-  border: 2px solid #001838;
-  border-radius: 20px;
+const SkillItem = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  padding: 10px;
+  background-color: #f3f3f3;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
 
   button {
-    margin: 0 10px;
-    padding: 5px 10px;
-    color: #001838;
-    background-color: #fff;
-    border: 2px solid #001838;
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.3s, transform 0.3s;
+
+    &:hover {
+      color: darkred;
+      transform: scale(1.1);
+    }
+  }
+`;
+
+const EnlargedCertificate = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border: 3px solid #001838;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  img {
+    max-width: 90%;
+    max-height: 90%;
+    margin-bottom: 10px;
+    border: 3px solid #001838;
     border-radius: 10px;
+    transition: transform 0.3s;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #001838;
+    color: white;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
     transition: background-color 0.3s, transform 0.3s;
 
     &:hover {
-      background-color: #f0f0f0;
+      background-color: #0056b3;
       transform: translateY(-2px);
+    }
+
+    &:nth-child(2) {
+      margin-left: 10px;
+      background-color: red;
+    }
+
+    &:nth-child(2):hover {
+      background-color: darkred;
     }
   }
 `;
 
-const mapStateToProps = (state) => ({
-  user: state.userState.user,
-  userDetails: state.userState.userDetails,
-});
+const mapStateToProps = (state) => {
+  return {
+    user: state.userState.user,
+    userDetails: state.userState.userDetails,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchUserDetails: (userEmail) => dispatch(fetchUserDetails(userEmail)),
-  uploadCertificates: (userEmail, certificates) =>
-    dispatch(uploadCertificates(userEmail, certificates)),
-  deleteCertificate: (userEmail, certificate) =>
-    dispatch(deleteCertificate(userEmail, certificate)),
-  addSkill: (userEmail, skill) => dispatch(addSkill(userEmail, skill)),
-  deleteSkill: (userEmail, skill) => dispatch(deleteSkill(userEmail, skill)),
+  fetchUserDetails: (email) => dispatch(fetchUserDetails(email)),
+  uploadCertificates: (email, files) =>
+    dispatch(uploadCertificates(email, files)),
+  deleteCertificate: (email, certificate) =>
+    dispatch(deleteCertificate(email, certificate)),
+  addSkill: (email, skill) => dispatch(addSkill(email, skill)),
+  deleteSkill: (email, skill) => dispatch(deleteSkill(email, skill)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

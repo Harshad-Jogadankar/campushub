@@ -7,8 +7,8 @@ const firebaseConfig = {
   storageBucket: "campushub-d98bd.appspot.com",
   messagingSenderId: "643264223185",
   appId: "1:643264223185:web:f2d86a18930fdd0f3e32f0",
-};*/
-
+};
+*/
 const firebaseConfig = {
   apiKey: "AIzaSyBOP21xXjFC_FClCf0A9e1Z4F5BwiAmpow",
   authDomain: "campushub-1c470.firebaseapp.com",

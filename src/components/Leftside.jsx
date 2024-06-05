@@ -187,6 +187,10 @@ const CommunityCard = styled(ArtCard)`
       padding-bottom: 3px;
     }
 
+    img {
+      cursor: pointer;
+    }
+
     .dismore {
       border-top: none;
       align-items: left;
@@ -202,14 +206,13 @@ const ProjectList = styled.div`
   padding: 0 12px;
   display: flex;
   flex-direction: column;
-
   color: rgba(0, 0, 0, 0.7);
   .discover {
     padding-top: 2px;
     padding-bottom: 2px;
     cursor: pointer;
-    font-size: 14px;
     color: black;
+    font-size: 14px;
   }
 `;
 

@@ -6,6 +6,7 @@ import {
   addEventAPI,
   deleteEventAPI,
   updateEventAPI,
+  updateInterestedAPI,
 } from "../actions";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
@@ -18,6 +19,7 @@ const EventCollab = (props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [zoomImage, setZoomImage] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +27,7 @@ const EventCollab = (props) => {
       props.getEvents();
       checkAuthorization();
     }
-  }, [props.user]);
+  }, [props.user, props.getEvents]);
 
   const handleUserClick = (email) => {
     navigate(`/user/${email}`);
@@ -49,6 +51,8 @@ const EventCollab = (props) => {
     eventData.email = props.user.email;
     eventData.creator = props.user.email;
     eventData.timestamp = new Date().toISOString();
+    eventData.interested = eventData.interested ?? 0;
+    eventData.interestedUsers = eventData.interestedUsers ?? [];
 
     if (isEditing) {
       props.updateEvent(editingEvent.id, eventData);
@@ -83,13 +87,15 @@ const EventCollab = (props) => {
     }
   };
 
-  const filteredEvents = props.events.filter((event) =>
-    event.name.toLowerCase().includes(props.searchQuery.toLowerCase())
-  );
-
   if (!props.user) {
     return <Navigate to="/" />;
   }
+
+  const handleInterested = (event) => {
+    if (!event.interestedUsers.includes(props.user.email)) {
+      props.updateInterested(event.id, props.user.email);
+    }
+  };
 
   return (
     <Container>
@@ -106,67 +112,102 @@ const EventCollab = (props) => {
           existingEvent={editingEvent}
         />
       </EventBox>
-      {filteredEvents.length === 0 ? (
+      {props.events.length === 0 ? (
         <NoEventsMessage>There are no events</NoEventsMessage>
       ) : (
         <Content>
           {props.loading && (
-            <img src="/images/spin-loader.svg" className="loading" />
+            <img
+              src="/images/spin-loader.svg"
+              className="loading"
+              alt="Loading"
+            />
           )}
-          {filteredEvents
-            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-            .map((event, key) => (
+          {props.events
+            .sort((a, b) => b.interested - a.interested)
+            .map((event) => (
               <Event key={event.id}>
                 <EventDetails>
-                  <UserInfo onClick={() => handleUserClick(event.email)}>
-                    <UserName>{event.userName}</UserName>
-                    <ProfilePic src={event.profilePic} alt="Profile" />
-                  </UserInfo>
-                  <EventName>{event.name}</EventName>
-                  <EventDescription>{event.description}</EventDescription>
-                  <EventTime>
-                    {formatDistanceToNow(new Date(event.timestamp))} ago
-                  </EventTime>
-                  <EventDate>Date: {event.date}</EventDate>
-                  <EventTime>Time: {event.time}</EventTime>
-                  <EventLocation>Location: {event.location}</EventLocation>
-                  <EventClub>Club Name: {event.clubName}</EventClub>
-                  <EventDuration>Duration: {event.duration}</EventDuration>
-                  {event.poster && (
-                    <EventPoster src={event.poster} alt="Event Poster" />
-                  )}
-                  {event.brochure && (
-                    <EventBrochure
-                      href={event.brochure}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      View Brochure
-                    </EventBrochure>
-                  )}
-                  {event.registrationLink && (
-                    <EventRegistrationLink
-                      href={event.registrationLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Register Here
-                    </EventRegistrationLink>
-                  )}
-                  {event.creator === props.user.email && (
+                  <LeftSide>
+                    <UserInfo onClick={() => handleUserClick(event.email)}>
+                      <ProfilePic src={event.profilePic} alt="Profile" />
+                      <UserName>
+                        {event.userName}, {event.clubName}
+                      </UserName>
+                    </UserInfo>
+                    <EventHeader>
+                      <EventTime>
+                        {formatDistanceToNow(new Date(event.timestamp))} ago
+                      </EventTime>
+                    </EventHeader>
+                    <EventName>{event.name}</EventName>
+                    <EventDescription>{event.description}</EventDescription>
+                    <EventLocation>
+                      <b>Location:</b> {event.location}
+                    </EventLocation>
+                    <EventDateDetails>
+                      <b>Date:</b> {event.date}
+                    </EventDateDetails>
+                    <EventTimeDetails>
+                      <b>Time:</b> {event.time}
+                    </EventTimeDetails>
+                    <EventDuration>
+                      <b>Duration:</b> {event.duration}
+                    </EventDuration>
+                    {event.brochure && (
+                      <EventBrochure
+                        href={event.brochure}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View Brochure
+                      </EventBrochure>
+                    )}
+                    {event.registrationLink && (
+                      <EventRegistrationLink
+                        href={event.registrationLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Register Here
+                      </EventRegistrationLink>
+                    )}
                     <Buttons>
-                      <EditButton onClick={() => handleEditEvent(event)}>
-                        Edit
-                      </EditButton>
-                      <DeleteButton onClick={() => handleDeleteEvent(event.id)}>
-                        Delete
-                      </DeleteButton>
+                      <InterestedButton onClick={() => handleInterested(event)}>
+                        Interested ({event.interested ?? 0})
+                      </InterestedButton>
+                      {event.creator === props.user.email && (
+                        <>
+                          <EditButton onClick={() => handleEditEvent(event)}>
+                            Edit
+                          </EditButton>
+                          <DeleteButton
+                            onClick={() => handleDeleteEvent(event.id)}
+                          >
+                            Delete
+                          </DeleteButton>
+                        </>
+                      )}
                     </Buttons>
+                  </LeftSide>
+                  <Divider />
+                  {event.poster && (
+                    <RightSide>
+                      <EventPoster src={event.poster} alt="Event Poster" />
+                      <ZoomButton onClick={() => setZoomImage(event.poster)}>
+                        Zoom
+                      </ZoomButton>
+                    </RightSide>
                   )}
                 </EventDetails>
               </Event>
             ))}
         </Content>
+      )}
+      {zoomImage && (
+        <ZoomModal onClick={() => setZoomImage(null)}>
+          <ZoomedImage src={zoomImage} alt="Zoomed Event Poster" />
+        </ZoomModal>
       )}
     </Container>
   );
@@ -175,6 +216,8 @@ const EventCollab = (props) => {
 const Container = styled.div`
   grid-area: main;
   padding-top: 100px;
+  background-color: rgba(0, 0, 0, 0.07);
+  min-height: 100vh;
 `;
 
 const EventBox = styled.div`
@@ -183,20 +226,26 @@ const EventBox = styled.div`
 `;
 
 const CreateEventButton = styled.button`
-  padding: 10px;
+  padding: 10px 20px;
   background-color: #0073b1;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
+  &:hover {
+    background-color: #005f8b;
+  }
 `;
 
 const NoEventsMessage = styled.p`
   text-align: center;
+  font-size: 18px;
+  color: #555;
 `;
 
 const Content = styled.div`
-  text-align: center;
+  text-align: left;
   .loading {
     height: 30px;
     width: 30px;
@@ -204,25 +253,92 @@ const Content = styled.div`
 `;
 
 const Event = styled.div`
-  margin: 10px 0;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+  padding: 30px;
   background-color: #98c5e9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border: 20px solid hsla(220, 75%, 30%, 0.84);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 1000px;
 `;
 
 const EventDetails = styled.div`
-  text-align: left;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+`;
+
+const EventHeader = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-bottom: 10px;
+  margin-top: -31px;
+`;
+
+const EventName = styled.h3`
+  margin: 0;
+  color: black;
+  margin-top: 30px;
+  margin-bottom: 10px;
+`;
+
+const EventTime = styled.span`
+  margin-left: 10px;
+  color: #777;
+`;
+
+const EventDateDetails = styled.span`
+  color: black;
+  padding-bottom: 5px;
+`;
+
+const EventTimeDetails = styled.span`
+  color: black;
+`;
+
+const LeftSide = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+  width: 50%;
+`;
+
+const RightSide = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  position: relative;
+`;
+
+const Divider = styled.div`
+  width: 1px;
+  background-color: black;
+  margin: 0 10px;
 `;
 
 const UserInfo = styled.span`
   display: flex;
   align-items: center;
   cursor: pointer;
+  margin-top: -10px;
+  margin-left: -10px;
 `;
 
 const UserName = styled.p`
-  margin: 0 10px 0 0;
+  margin: 0 0 0 10px;
   font-weight: bold;
 `;
 
@@ -232,34 +348,21 @@ const ProfilePic = styled.img`
   border-radius: 50%;
 `;
 
-const EventName = styled.h3`
-  margin: 10px 0;
-  color: #333;
-`;
-
 const EventDescription = styled.p`
   margin: 5px 0;
-  color: #555;
-`;
-
-const EventTime = styled.p`
-  margin: 5px 0;
-  color: #777;
-`;
-
-const EventDate = styled.p`
-  margin: 5px 0;
-  color: #777;
+  color: black;
+  text-align: justify;
 `;
 
 const EventLocation = styled.p`
   margin: 5px 0;
-  color: #777;
+  color: black;
 `;
 
 const EventPoster = styled.img`
-  margin-top: 10px;
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   border-radius: 8px;
 `;
 
@@ -282,7 +385,7 @@ const EventRegistrationLink = styled.a`
 const Buttons = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  margin-top: 55px;
 `;
 
 const EditButton = styled.button`
@@ -293,6 +396,9 @@ const EditButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  &:hover {
+    background-color: #005f8b;
+  }
 `;
 
 const DeleteButton = styled.button`
@@ -302,15 +408,57 @@ const DeleteButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  &:hover {
+    background-color: #b52b2b;
+  }
 `;
-const EventClub = styled.p`
-  margin: 5px 0;
-  color: #777;
+
+const ZoomButton = styled.button`
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  background-color: #0073b1;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: #005f8b;
+  }
+`;
+
+const InterestedButton = styled.button`
+  padding: 5px 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 5px;
+`;
+
+const ZoomModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ZoomedImage = styled.img`
+  max-width: 90%;
+  max-height: 90%;
 `;
 
 const EventDuration = styled.p`
   margin: 5px 0;
-  color: #777;
+  color: black;
 `;
 
 const mapStateToProps = (state) => {
@@ -328,6 +476,8 @@ const mapDispatchToProps = (dispatch) => ({
   deleteEvent: (eventId) => dispatch(deleteEventAPI(eventId)),
   updateEvent: (eventId, eventData) =>
     dispatch(updateEventAPI(eventId, eventData)),
+  updateInterested: (eventId, userEmail) =>
+    dispatch(updateInterestedAPI(eventId, userEmail)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EventCollab);

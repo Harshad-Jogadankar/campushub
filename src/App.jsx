@@ -7,6 +7,7 @@ import Profile from "./components/Profile";
 import ProjectCollab from "./components/ProjectCollab";
 import OtherUserProfile from "./components/OtherUserProfile";
 import EventCollab from "./components/EventCollab";
+import NotificationsList from "./components/NotificationsList";
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
             element={
               <>
                 <Header />
-                <ProjectCollab/>
+                <ProjectCollab />
               </>
             }
           />
@@ -48,7 +49,7 @@ function App() {
             element={
               <>
                 <Header />
-                <EventCollab/>
+                <EventCollab />
               </>
             }
           />
@@ -58,11 +59,20 @@ function App() {
             element={
               <>
                 <Header />
-                <OtherUserProfile/>
+                <OtherUserProfile />
               </>
             }
           />
 
+          <Route
+            path="/notification"
+            element={
+              <>
+                <Header />
+                <NotificationsList />
+              </>
+            }
+          />
         </Routes>
       </Router>
     </div>

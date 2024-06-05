@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { storage } from "../firebase"; // Import your Firebase configuration
 
 const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
   const [eventName, setEventName] = useState("");
@@ -47,22 +48,64 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
     setFile(e.target.files[0]);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent form submission if validation fails
-    const eventData = {
-      name: eventName,
-      description: eventDescription,
-      date: eventDate,
-      time: eventTime,
-      location: eventLocation,
-      poster: eventPoster,
-      brochure: eventBrochure,
-      registrationLink: registrationLink,
-      clubName: clubName,
-      duration: duration,
-    };
-    onSubmit(eventData);
-    resetForm();
+  const handleSubmit = async () => {
+    console.log("handleSubmit triggered");
+
+    // Check for required fields
+    if (
+      !eventName ||
+      !eventDescription ||
+      !eventDate ||
+      !eventTime ||
+      !eventLocation ||
+      !clubName ||
+      !duration
+    ) {
+      alert("Please fill out all required fields.");
+      return;
+    }
+
+    try {
+      let posterURL = "";
+      let brochureURL = "";
+
+      if (eventPoster) {
+        console.log("Uploading poster...");
+        const posterRef = storage.ref().child(`posters/${eventPoster.name}`);
+        await posterRef.put(eventPoster);
+        posterURL = await posterRef.getDownloadURL();
+        console.log("Poster uploaded, URL:", posterURL);
+      }
+
+      if (eventBrochure) {
+        console.log("Uploading brochure...");
+        const brochureRef = storage
+          .ref()
+          .child(`brochures/${eventBrochure.name}`);
+        await brochureRef.put(eventBrochure);
+        brochureURL = await brochureRef.getDownloadURL();
+        console.log("Brochure uploaded, URL:", brochureURL);
+      }
+
+      const eventData = {
+        name: eventName,
+        description: eventDescription,
+        date: eventDate,
+        time: eventTime,
+        location: eventLocation,
+        poster: posterURL,
+        brochure: brochureURL,
+        registrationLink: registrationLink,
+        clubName: clubName,
+        duration: duration,
+      };
+
+      console.log("Event Data:", eventData);
+      onSubmit(eventData);
+      resetForm();
+    } catch (error) {
+      console.error("Error uploading files: ", error);
+    }
   };
 
   if (!show) {
@@ -74,47 +117,45 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}>&times;</CloseButton>
         <h2>{existingEvent ? "Edit Event" : "Create Event"}</h2>
-        <Form onSubmit={handleSubmit}>
+        <Form>
           <Input
             type="text"
-            placeholder="Event Name"
+            placeholder="Event Name *"
             value={eventName}
             onChange={(e) => setEventName(e.target.value)}
-            required
           />
           <Input
             type="text"
-            placeholder="Description"
+            placeholder="Description *"
             value={eventDescription}
             onChange={(e) => setEventDescription(e.target.value)}
-            required
           />
           <Input
             type="date"
+            placeholder="Date *"
             value={eventDate}
             onChange={(e) => setEventDate(e.target.value)}
-            required
           />
           <Input
             type="time"
+            placeholder="Time *"
             value={eventTime}
             onChange={(e) => setEventTime(e.target.value)}
-            required
           />
           <Input
             type="text"
-            placeholder="Location"
+            placeholder="Location *"
             value={eventLocation}
             onChange={(e) => setEventLocation(e.target.value)}
-            required
           />
           <Input
             type="file"
+            placeholder="Poster"
             onChange={(e) => handleFileChange(e, setEventPoster)}
-            required
           />
           <Input
             type="file"
+            placeholder="Brochure"
             onChange={(e) => handleFileChange(e, setEventBrochure)}
           />
           <Input
@@ -125,19 +166,17 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
           />
           <Input
             type="text"
-            placeholder="Club Name"
+            placeholder="Club Name *"
             value={clubName}
             onChange={(e) => setClubName(e.target.value)}
-            required
           />
           <Input
             type="text"
-            placeholder="Duration"
+            placeholder="Duration *"
             value={duration}
-            required
             onChange={(e) => setDuration(e.target.value)}
           />
-          <SubmitButton type="submit">
+          <SubmitButton type="button" onClick={handleSubmit}>
             {existingEvent ? "Update Event" : "Create Event"}
           </SubmitButton>
         </Form>
