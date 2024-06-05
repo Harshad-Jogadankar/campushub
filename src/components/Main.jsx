@@ -101,7 +101,7 @@ const Main = (props) => {
               disabled={props.loading ? true : false}
               className="clickable"
             >
-              Start a post
+              Start a post | Create a Post
             </button>
           </div>
           <div>
